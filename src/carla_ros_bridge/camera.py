@@ -23,7 +23,8 @@ import carla
 from carla_ros_bridge.sensor import Sensor
 import carla_ros_bridge.transforms as trans
 
-
+global cam_id
+cam_id = 0
 class Camera(Sensor):
 
     """
@@ -35,6 +36,7 @@ class Camera(Sensor):
 
     @staticmethod
     def create_actor(carla_actor, parent):
+        global cam_id
         """
         Static factory method to create camera actors
 
@@ -45,12 +47,14 @@ class Camera(Sensor):
         :return: the created camera actor
         :rtype: carla_ros_bridge.Camera or derived type
         """
+        cam_id= cam_id + 1
         if carla_actor.type_id.startswith("sensor.camera.rgb"):
-            return RgbCamera(carla_actor=carla_actor, parent=parent)
+            return RgbCamera(carla_actor=carla_actor, parent=parent,topic_prefix = str(cam_id))
+
         elif carla_actor.type_id.startswith("sensor.camera.depth"):
-            return DepthCamera(carla_actor=carla_actor, parent=parent)
+            return DepthCamera(carla_actor=carla_actor, parent=parent,topic_prefix = str(cam_id))
         elif carla_actor.type_id.startswith("sensor.camera.semantic_segmentation"):
-            return SemanticSegmentationCamera(carla_actor=carla_actor, parent=parent)
+            return SemanticSegmentationCamera(carla_actor=carla_actor, parent=parent,topic_prefix = str(cam_id))
         else:
             return Camera(carla_actor=carla_actor, parent=parent)
 
