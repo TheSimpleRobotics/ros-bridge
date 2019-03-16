@@ -23,8 +23,14 @@ import carla
 from carla_ros_bridge.sensor import Sensor
 import carla_ros_bridge.transforms as trans
 
-global cam_id
-cam_id = 0
+# Global variables for camera id initialization in topics
+global rgb_cam_id
+global semseg_cam_id
+global depth_cam_id
+rgb_cam_id = 0
+semseg_cam_id = 0
+depth_cam_id = 0
+
 class Camera(Sensor):
 
     """
@@ -36,7 +42,10 @@ class Camera(Sensor):
 
     @staticmethod
     def create_actor(carla_actor, parent):
-        global cam_id
+        global rgb_cam_id
+        global semseg_cam_id
+        global depth_cam_id
+
         """
         Static factory method to create camera actors
 
@@ -47,14 +56,18 @@ class Camera(Sensor):
         :return: the created camera actor
         :rtype: carla_ros_bridge.Camera or derived type
         """
-        cam_id= cam_id + 1
-        if carla_actor.type_id.startswith("sensor.camera.rgb"):
-            return RgbCamera(carla_actor=carla_actor, parent=parent,topic_prefix = str(cam_id))
 
+
+
+        if carla_actor.type_id.startswith("sensor.camera.rgb"):
+            rgb_cam_id= rgb_cam_id + 1
+            return RgbCamera(carla_actor=carla_actor, parent=parent,topic_prefix = "cam_id_"+str(rgb_cam_id))
         elif carla_actor.type_id.startswith("sensor.camera.depth"):
-            return DepthCamera(carla_actor=carla_actor, parent=parent,topic_prefix = str(cam_id))
+            depth_cam_id= depth_cam_id + 1
+            return DepthCamera(carla_actor=carla_actor, parent=parent,topic_prefix = "cam_id_"+str(depth_cam_id))
         elif carla_actor.type_id.startswith("sensor.camera.semantic_segmentation"):
-            return SemanticSegmentationCamera(carla_actor=carla_actor, parent=parent,topic_prefix = str(cam_id))
+            semseg_cam_id= semseg_cam_id + 1
+            return SemanticSegmentationCamera(carla_actor=carla_actor, parent=parent,topic_prefix = "cam_id_"+str(semseg_cam_id))
         else:
             return Camera(carla_actor=carla_actor, parent=parent)
 
